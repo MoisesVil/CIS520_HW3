@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "bitmap.h"
 #include "block_store.h"
 // include more if you need
 
-block_store_t{
+typedef struct block_store {
         bitmap_t *bitmap;
 } block_store_t;
 
@@ -16,10 +17,11 @@ block_store_t{
 block_store_t *block_store_create()
 {
 	block_store_t *bs;
+	bs = (block_store_t *)malloc(sizeof(block_store_t));
 	memset(bs, 0, sizeof(block_store_t));
-	bs->bitmap = bitmap_create(BITMAP_SIZE_BITES);
+	bs->bitmap = bitmap_create(BITMAP_SIZE_BYTES);
 	bitmap_set(bs->bitmap, BITMAP_START_BLOCK);	
-	block_store_request(bs->bitmap);
+	block_store_request(bs, 0);
 	return bs;
 }
 
@@ -27,7 +29,7 @@ void block_store_destroy(block_store_t *const bs)
 {
 	if(bs != NULL)
 	{
-		bitmap_destory(bs->bitmap);
+		bitmap_destroy(bs->bitmap);
 		free(bs);
 	}
 }

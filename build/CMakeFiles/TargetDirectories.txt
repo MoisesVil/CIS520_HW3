@@ -1,4 +1,0 @@
-/homes/moisesvil/cis520/hw3/build/CMakeFiles/rebuild_cache.dir
-/homes/moisesvil/cis520/hw3/build/CMakeFiles/edit_cache.dir
-/homes/moisesvil/cis520/hw3/build/CMakeFiles/hw3_test.dir
-/homes/moisesvil/cis520/hw3/build/CMakeFiles/block_store.dir
