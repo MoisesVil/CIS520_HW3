@@ -5,10 +5,9 @@
 #include "block_store.h"
 // include more if you need
 
-typedef struct block_store {
-
+block_store_t{
+        bitmap_t *bitmap;
 } block_store_t;
-
 
 // You might find this handy. I put it around unused parameters, but you should
 // remove it before you submit. Just allows things to compile initially.
@@ -16,12 +15,21 @@ typedef struct block_store {
 
 block_store_t *block_store_create()
 {
-	return NULL;
+	block_store_t *bs;
+	memset(bs, 0, sizeof(block_store_t));
+	bs->bitmap = bitmap_create(BITMAP_SIZE_BITES);
+	bitmap_set(bs->bitmap, BITMAP_START_BLOCK);	
+	block_store_request(bs->bitmap);
+	return bs;
 }
 
 void block_store_destroy(block_store_t *const bs)
 {
-	UNUSED(bs);
+	if(bs != NULL)
+	{
+		bitmap_destory(bs->bitmap);
+		free(bs);
+	}
 }
 
 size_t block_store_allocate(block_store_t *const bs)
