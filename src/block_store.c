@@ -5,6 +5,10 @@
 #include "block_store.h"
 // include more if you need
 
+typedef struct block_store {
+
+} block_store_t;
+
 
 // You might find this handy. I put it around unused parameters, but you should
 // remove it before you submit. Just allows things to compile initially.
