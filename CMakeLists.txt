@@ -6,9 +6,11 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Werror -Wno-sign-compare
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
+set(SRC_FILES src/block_store.c src/bitmap.c)
+
 # build a dynamic library called libblock_store.so
 # note that the prefix lib will be automatically added in the filename.
-
+add_library(block_store SHARED ${SRC_FILES})
 
 # make an executable
 add_executable(${PROJECT_NAME}_test test/tests.cpp)

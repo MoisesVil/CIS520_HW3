@@ -22,9 +22,13 @@ class GradeEnvironment : public testing::Environment {
 };
 */
 
+#define UNUSED(x) (void)(x)
+
 int main(int argc, char **argv) {
 	// ::testing::InitGoogleTest(&argc, argv);
 	// ::testing::AddGlobalTestEnvironment(new GradeEnvironment);
+	UNUSED(argc);
+	UNUSED(argv);
 	return RUN_ALL_TESTS();
 }
 
