@@ -16,12 +16,23 @@ typedef struct block_store {
 
 block_store_t *block_store_create()
 {
+	// Initializing the block_store and creating memory for it
 	block_store_t *bs;
 	bs = (block_store_t *)malloc(sizeof(block_store_t));
+
+	// Setting all of the memory to 0
 	memset(bs, 0, sizeof(block_store_t));
+
+	// Creating the bitmap
 	bs->bitmap = bitmap_create(BITMAP_SIZE_BYTES);
+
+	// Setting the first block in the bitmap (127)
 	bitmap_set(bs->bitmap, BITMAP_START_BLOCK);	
+
+	// Setting blocks used by bitmap as allocated
 	block_store_request(bs, 0);
+
+	// Returning the block_store
 	return bs;
 }
 
@@ -30,27 +41,35 @@ void block_store_destroy(block_store_t *const bs)
 	// Checking to make sure bs is not NULL
 	if(bs != NULL)
 	{
-		// Freeing 
+		// Freeing space created by the bitmap
 		bitmap_destroy(bs->bitmap);
+
+		// Freeing space create by the block_store
 		free(bs);
 	}
 }
 
 size_t block_store_allocate(block_store_t *const bs)
 {
+	// Checking params to not be NULL
 	if(bs != NULL)
 	{
+		// Getting the first free block in the bitmap
 		size_t free_block = bitmap_ffz(bs->bitmap);
+
+		// If bitmap_ffz threw an error, return SIZE_MAX
 		if (free_block == SIZE_MAX) 
 		{
 			return SIZE_MAX;
 		}
 
+		// Setting the block in the bitmap and returning that block
 		bitmap_set(bs->bitmap, free_block);
 		return free_block;
 	}
+
+	// If error with params, reutn SIZE_MAX
 	return SIZE_MAX;
-	
 }
 
 bool block_store_request(block_store_t *const bs, const size_t block_id)
@@ -77,8 +96,10 @@ bool block_store_request(block_store_t *const bs, const size_t block_id)
 
 void block_store_release(block_store_t *const bs, const size_t block_id)
 {
+	// Checking params to make sure they work properly
 	if (bs != NULL && block_id < BLOCK_STORE_NUM_BLOCKS) 
 	{
+		// Resetting the block in the bitmap
 		bitmap_reset((bs -> bitmap), block_id);
 	}
 }
