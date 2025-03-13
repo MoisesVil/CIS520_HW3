@@ -30,7 +30,7 @@ block_store_t *block_store_create()
 	bitmap_set(bs->bitmap, BITMAP_START_BLOCK);	
 
 	// Setting blocks used by bitmap as allocated
-	block_store_request(bs, 127);
+	block_store_request(bs, BITMAP_START_BLOCK);
 
 	// Returning the block_store
 	return bs;
