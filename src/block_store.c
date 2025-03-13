@@ -36,8 +36,12 @@ void block_store_destroy(block_store_t *const bs)
 
 size_t block_store_allocate(block_store_t *const bs)
 {
-	UNUSED(bs);
-	return 0;
+	if(bs != NULL)
+	{
+		return bitmap_set(bs->bitmap, bitmap_ffz(bs->bitmap));
+	}
+	return SIZE_MAX;
+	
 }
 
 bool block_store_request(block_store_t *const bs, const size_t block_id)
