@@ -27,8 +27,10 @@ block_store_t *block_store_create()
 
 void block_store_destroy(block_store_t *const bs)
 {
+	// Checking to make sure bs is not NULL
 	if(bs != NULL)
 	{
+		// Freeing 
 		bitmap_destroy(bs->bitmap);
 		free(bs);
 	}
@@ -75,8 +77,10 @@ bool block_store_request(block_store_t *const bs, const size_t block_id)
 
 void block_store_release(block_store_t *const bs, const size_t block_id)
 {
-	UNUSED(bs);
-	UNUSED(block_id);
+	if (bs != NULL && block_id < BLOCK_STORE_NUM_BLOCKS) 
+	{
+		bitmap_reset((bs -> bitmap), block_id);
+	}
 }
 
 size_t block_store_get_used_blocks(const block_store_t *const bs)
