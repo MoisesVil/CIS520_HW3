@@ -38,7 +38,14 @@ size_t block_store_allocate(block_store_t *const bs)
 {
 	if(bs != NULL)
 	{
-		return bitmap_set(bs->bitmap, bitmap_ffz(bs->bitmap));
+		size_t free_block = bitmap_ffz(bs->bitmap);
+		if (free_block == SIZE_MAX) 
+		{
+			return SIZE_MAX;
+		}
+
+		bitmap_set(bs->bitmap, free_block);
+		return free_block;
 	}
 	return SIZE_MAX;
 	
