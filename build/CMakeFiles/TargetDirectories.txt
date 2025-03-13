@@ -1,0 +1,4 @@
+/homes/ryanstueve/hw3/CIS520_HW3/build/CMakeFiles/rebuild_cache.dir
+/homes/ryanstueve/hw3/CIS520_HW3/build/CMakeFiles/edit_cache.dir
+/homes/ryanstueve/hw3/CIS520_HW3/build/CMakeFiles/hw3_test.dir
+/homes/ryanstueve/hw3/CIS520_HW3/build/CMakeFiles/block_store.dir
