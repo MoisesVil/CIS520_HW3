@@ -36,47 +36,24 @@ void block_store_destroy(block_store_t *const bs)
 
 size_t block_store_allocate(block_store_t *const bs)
 {
-	if(bs != NULL)
-	{
-		size_t free_block = bitmap_ffz(bs->bitmap);
-		if (free_block == SIZE_MAX) 
-		{
-			return SIZE_MAX;
-		}
-
-		bitmap_set(bs->bitmap, free_block);
-		return free_block;
-	}
-	return SIZE_MAX;
-	
+	UNUSED(bs);
+	return 0;
 }
 
 bool block_store_request(block_store_t *const bs, const size_t block_id)
 {
-	// Checking params
-	if (bs == NULL || block_id >= BLOCK_STORE_NUM_BLOCKS) 
-	{
-		return false;
-	}
-
-	// Making sure bit is not already set
-	if (bitmap_test(bs -> bitmap, block_id)) 
-	{
-		return false;
-	}
-
-	// Allocating the block
-	bitmap_set(bs -> bitmap, block_id);
-
-	// Testing to make sure bit was properly set, 
-	// returns true if it was and false otherwise
-	return bitmap_test(bs -> bitmap, block_id);
+	UNUSED(bs);
+	UNUSED(block_id);
+	return false;
 }
 
 void block_store_release(block_store_t *const bs, const size_t block_id)
 {
-	UNUSED(bs);
-	UNUSED(block_id);
+	if(bs !=  NULL && block_id < BLOCK_STORE_NUM_BLOCKS - 1)
+	{
+		bitmap_reset((bs -> bitmap), block_id);
+	}
+	
 }
 
 size_t block_store_get_used_blocks(const block_store_t *const bs)
@@ -93,7 +70,7 @@ size_t block_store_get_free_blocks(const block_store_t *const bs)
 
 size_t block_store_get_total_blocks()
 {
-	return BLOCK_STORE_NUM_BLOCKS;
+	return 0;
 }
 
 size_t block_store_read(const block_store_t *const bs, const size_t block_id, void *buffer)
