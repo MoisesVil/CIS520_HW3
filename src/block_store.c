@@ -19,15 +19,14 @@ block_store_t *block_store_create()
 	// Initializing the block_store and creating memory for it
 	block_store_t *bs;
 	bs = (block_store_t *)malloc(sizeof(block_store_t));
+	// Making sure malloc() call worked
+	if (bs == NULL) return NULL;
 
 	// Setting all of the memory to 0
 	memset(bs, 0, sizeof(block_store_t));
 
 	// Creating the bitmap
-	bs->bitmap = bitmap_create(BITMAP_SIZE_BYTES);
-
-	// Setting the first block in the bitmap (127)
-	bitmap_set(bs->bitmap, BITMAP_START_BLOCK);	
+	bs->bitmap = bitmap_create(BITMAP_SIZE_BITS);
 
 	// Setting blocks used by bitmap as allocated
 	block_store_request(bs, BITMAP_START_BLOCK);
