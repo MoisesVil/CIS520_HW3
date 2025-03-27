@@ -1,0 +1,4 @@
+/homes/jwschaef/hw3/build/CMakeFiles/rebuild_cache.dir
+/homes/jwschaef/hw3/build/CMakeFiles/edit_cache.dir
+/homes/jwschaef/hw3/build/CMakeFiles/hw3_test.dir
+/homes/jwschaef/hw3/build/CMakeFiles/block_store.dir

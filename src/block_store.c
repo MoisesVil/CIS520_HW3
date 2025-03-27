@@ -136,18 +136,30 @@ size_t block_store_get_total_blocks()
 
 size_t block_store_read(const block_store_t *const bs, const size_t block_id, void *buffer)
 {
-	UNUSED(bs);
-	UNUSED(block_id);
-	UNUSED(buffer);
-	return 0;
+	if(bs == NULL || block_id > BLOCK_STORE_NUM_BLOCKS || buffer == NULL)
+	{
+		return 0;
+	}
+
+	uint8_t* data = (uint8_t*)bitmap_export(bs->bitmap);
+	memcpy(buffer, data + (block_id * BLOCK_SIZE_BYTES), BLOCK_SIZE_BYTES);
+
+
+	return BLOCK_SIZE_BYTES;
 }
 
 size_t block_store_write(block_store_t *const bs, const size_t block_id, const void *buffer)
 {
-	UNUSED(bs);
-	UNUSED(block_id);
-	UNUSED(buffer);
-	return 0;
+	if(bs == NULL || block_id > BLOCK_STORE_NUM_BLOCKS || buffer == NULL)
+	{
+		return 0;
+	}
+
+	uint8_t* data = (uint8_t*)bitmap_export(bs->bitmap);
+
+	memcpy(data + (block_id * BLOCK_SIZE_BYTES), buffer, BLOCK_SIZE_BYTES);
+
+	return BLOCK_SIZE_BYTES;
 }
 
 block_store_t *block_store_deserialize(const char *const filename)
