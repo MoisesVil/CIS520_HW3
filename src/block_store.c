@@ -27,7 +27,7 @@ block_store_t *block_store_create()
 	memset(bs, 0, sizeof(block_store_t));
 
 	// Creating the bitmap
-	bs->bitmap = bitmap_create(512 * 32);
+	bs->bitmap = bitmap_create(BLOCK_STORE_NUM_BYTES);
 
 	// Setting blocks used by bitmap as allocated
 	for (size_t i = BITMAP_START_BLOCK; i < BITMAP_START_BLOCK + BITMAP_NUM_BLOCKS; i++) 
@@ -61,7 +61,7 @@ size_t block_store_allocate(block_store_t *const bs)
 		size_t free_block = bitmap_ffz(bs->bitmap);
 
 		// If bitmap_ffz threw an error, return SIZE_MAX
-		if (free_block == SIZE_MAX) 
+		if (free_block >= 512) 
 		{
 			return SIZE_MAX;
 		}
