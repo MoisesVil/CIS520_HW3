@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-
+#include <unistd.h>
+#include <fcntl.h>
 #include "bitmap.h"
 #include "block_store.h"
 // include more if you need
@@ -26,7 +27,7 @@ block_store_t *block_store_create()
 	memset(bs, 0, sizeof(block_store_t));
 
 	// Creating the bitmap
-	bs->bitmap = bitmap_create(BITMAP_SIZE_BITS);
+	bs->bitmap = bitmap_create(512 * 32);
 
 	// Setting blocks used by bitmap as allocated
 	for (size_t i = BITMAP_START_BLOCK; i < BITMAP_START_BLOCK + BITMAP_NUM_BLOCKS; i++) 
@@ -144,12 +145,13 @@ size_t block_store_read(const block_store_t *const bs, const size_t block_id, vo
 	uint8_t* data = (uint8_t*)bitmap_export(bs->bitmap);
 	memcpy(buffer, data + (block_id * BLOCK_SIZE_BYTES), BLOCK_SIZE_BYTES);
 
-
 	return BLOCK_SIZE_BYTES;
 }
 
+
 size_t block_store_write(block_store_t *const bs, const size_t block_id, const void *buffer)
 {
+
 	if(bs == NULL || block_id > BLOCK_STORE_NUM_BLOCKS || buffer == NULL)
 	{
 		return 0;
@@ -157,20 +159,73 @@ size_t block_store_write(block_store_t *const bs, const size_t block_id, const v
 
 	uint8_t* data = (uint8_t*)bitmap_export(bs->bitmap);
 
+
 	memcpy(data + (block_id * BLOCK_SIZE_BYTES), buffer, BLOCK_SIZE_BYTES);
 
 	return BLOCK_SIZE_BYTES;
 }
 
+
 block_store_t *block_store_deserialize(const char *const filename)
 {
-	UNUSED(filename);
-	return NULL;
+	printf("gets here?\n");
+	if(filename == NULL)
+	{
+		return NULL;
+	}
+	int fd = open(filename, O_RDONLY);
+
+
+	block_store_t * bs = block_store_create();
+
+
+
+	char buf[BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES];
+
+
+	ssize_t sizeRead = read(fd, buf, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES);
+	if(sizeRead > BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES || sizeRead < 0)
+	{
+		return NULL;
+	}
+
+	uint8_t* data = (uint8_t*)bitmap_export(bs->bitmap);
+	memcpy(data, buf, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES);
+
+	close(fd);
+
+
+	return bs;
 }
 
 size_t block_store_serialize(const block_store_t *const bs, const char *const filename)
 {
-	UNUSED(bs);
-	UNUSED(filename);
-	return 0;
+	if (!bs || !filename) {
+        return 0; 
+    }
+
+    int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    if (fd == -1) {
+        return 0;
+    }
+
+    uint8_t *bitmap_data = (uint8_t*)bitmap_export(bs->bitmap);
+	
+    if (!bitmap_data) {
+        close(fd);
+        return 0;
+    }
+
+    int bytes_written = write(fd, bitmap_data, 512 * 32);
+    if (bytes_written < 0) {
+        free(bitmap_data);
+        close(fd);
+        return 0; 
+    }
+
+    close(fd);
+
+
+    return (size_t)bytes_written;
+	
 }
