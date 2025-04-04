@@ -132,100 +132,111 @@ size_t block_store_get_free_blocks(const block_store_t *const bs)
 
 size_t block_store_get_total_blocks()
 {
+	// Returns the total number of blocks we have
+	// (Always constant)
 	return BLOCK_STORE_NUM_BLOCKS;
 }
 
 size_t block_store_read(const block_store_t *const bs, const size_t block_id, void *buffer)
 {
+	// Check Params
 	if(bs == NULL || block_id > BLOCK_STORE_NUM_BLOCKS || buffer == NULL)
 	{
 		return 0;
 	}
 
+	// Gets bitmap data to read, and copies
+	// this data into the given buffer
 	uint8_t* data = (uint8_t*)bitmap_export(bs->bitmap);
 	memcpy(buffer, data + (block_id * BLOCK_SIZE_BYTES), BLOCK_SIZE_BYTES);
 
+
+	// Returns the amount of blocks that were read
 	return BLOCK_SIZE_BYTES;
 }
 
 
 size_t block_store_write(block_store_t *const bs, const size_t block_id, const void *buffer)
 {
-
+	// Check params
 	if(bs == NULL || block_id > BLOCK_STORE_NUM_BLOCKS || buffer == NULL)
 	{
 		return 0;
 	}
 
+	// Gets pointer to write to the bitmap
 	uint8_t* data = (uint8_t*)bitmap_export(bs->bitmap);
 
-
+	// Writing the data into the bitmap from the buffer
 	memcpy(data + (block_id * BLOCK_SIZE_BYTES), buffer, BLOCK_SIZE_BYTES);
 
+	// Returns the amount of blocks that were read
 	return BLOCK_SIZE_BYTES;
 }
 
 
 block_store_t *block_store_deserialize(const char *const filename)
 {
-	printf("gets here?\n");
+	// Check for NULL
 	if(filename == NULL)
 	{
 		return NULL;
 	}
+
 	int fd = open(filename, O_RDONLY);
 
-
+	// Creating block store to store information
+	// and buffer to read information
 	block_store_t * bs = block_store_create();
-
-
-
 	char buf[BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES];
 
-
+	// Reading from file, if read more than can fit or nothing, return NULL
 	ssize_t sizeRead = read(fd, buf, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES);
 	if(sizeRead > BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES || sizeRead < 0)
 	{
 		return NULL;
 	}
 
+	// Getting pointer to write to bitmap and copying
+	// buffer into the bitmap
 	uint8_t* data = (uint8_t*)bitmap_export(bs->bitmap);
 	memcpy(data, buf, BLOCK_STORE_NUM_BLOCKS * BLOCK_SIZE_BYTES);
-
 	close(fd);
 
-
+	// Returning the read-in block store
 	return bs;
 }
 
 size_t block_store_serialize(const block_store_t *const bs, const char *const filename)
 {
-	if (!bs || !filename) {
+	// Checking params for NULL
+	if (bs == NULL || filename == NULL) {
         return 0; 
     }
 
+	// Opening file, and returning 0 if error occurs
     int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     if (fd == -1) {
         return 0;
     }
 
+	// Getting bitmap data to read and returning 0 if error
     uint8_t *bitmap_data = (uint8_t*)bitmap_export(bs->bitmap);
-	
-    if (!bitmap_data) {
+    if (bitmap_data == NULL) {
         close(fd);
         return 0;
     }
 
+	// Writing to file, if nothing is written, return 0
     int bytes_written = write(fd, bitmap_data, 512 * 32);
     if (bytes_written < 0) {
         free(bitmap_data);
         close(fd);
         return 0; 
     }
-
     close(fd);
 
-
+	// Returning the amount of bytes written
     return (size_t)bytes_written;
 	
 }
